@@ -23,3 +23,10 @@
 hs_err_pid*
 
 .idea
+
+gulimall-*/.mvn
+gulimall-*/.gitignore
+gulimall-*/HELP.md
+gulimall-*/*.iml
+gulimall-*/mvnw*
+
