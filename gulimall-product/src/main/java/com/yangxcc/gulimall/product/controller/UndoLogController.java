@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yangxcc.gulimall.product.entity.UndoLogEntity;
+import com.yangxcc.gulimall.product.service.UndoLogService;
 import com.yangxcc.common.utils.PageUtils;
 import com.yangxcc.common.utils.R;
 
@@ -21,7 +22,7 @@ import com.yangxcc.common.utils.R;
  *
  * @author yangx
  * @email yangx@gmail.com
- * @date 2022-10-26 20:32:23
+ * @date 2022-10-28 10:51:30
  */
 @RestController
 @RequestMapping("product/undolog")

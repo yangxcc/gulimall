@@ -2,17 +2,17 @@ package com.yangxcc.gulimall.product.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 
  * 
  * @author yangx
  * @email yangx@gmail.com
- * @date 2022-10-26 20:32:23
+ * @date 2022-10-28 10:51:30
  */
 @Data
 @TableName("undo_log")
@@ -39,7 +39,7 @@ public class UndoLogEntity implements Serializable {
 	/**
 	 * 
 	 */
-	private Longblob rollbackInfo;
+	private byte rollbackInfo;
 	/**
 	 * 
 	 */
