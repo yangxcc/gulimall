@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://192.168.95.132:3307/gulimall_sms
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.95.132:8848
+        # 这里猜测这个配置是ignore掉nacos上的配置文件
+#        import-check:
+#          enabled: false
+      discovery:
+        server-addr: 192.168.95.132:8848
+  application:
+    name: gulimall-coupon
+
+
+mybatis-plus:
+  mapper-locations: "classpath*:/mapper/**/*.xml"
+  global-config:
+    db-config:
+      id-type: auto
+server:
+  port: 8081

@@ -1,20 +1,17 @@
 package com.yangxcc.gulimall.coupon.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.yangxcc.gulimall.coupon.entity.CouponEntity;
-import com.yangxcc.gulimall.coupon.service.CouponService;
 import com.yangxcc.common.utils.PageUtils;
 import com.yangxcc.common.utils.R;
+import com.yangxcc.gulimall.coupon.entity.CouponEntity;
+import com.yangxcc.gulimall.coupon.feign.ProductFeignService;
+import com.yangxcc.gulimall.coupon.service.CouponService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -30,6 +27,25 @@ public class CouponController {
     @Autowired
     private CouponService couponService;
 
+    @Autowired
+    ProductFeignService productFeignService;
+
+    @RequestMapping("/list/sku_info")
+    public R testFeign() {
+        R product = productFeignService.listProduct();
+        return R.ok().put("shuInfo", product);
+    }
+
+    @Value("${coupon.user.name}")
+    private String name;
+    @Value("${coupon.user.age}")
+    private Integer age;
+
+    @RequestMapping("/test/nacos_configure")
+    public R testNacosConfigure() {
+        return Objects.requireNonNull(R.ok().put("name", name)).put("age", age);
+    }
+
     /**
      * 列表
      */
@@ -39,7 +55,6 @@ public class CouponController {
 
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息

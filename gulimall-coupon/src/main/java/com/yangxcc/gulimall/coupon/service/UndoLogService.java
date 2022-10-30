@@ -2,6 +2,7 @@ package com.yangxcc.gulimall.coupon.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yangxcc.common.utils.PageUtils;
+import com.yangxcc.gulimall.coupon.entity.UndoLogEntity;
 
 import java.util.Map;
 
