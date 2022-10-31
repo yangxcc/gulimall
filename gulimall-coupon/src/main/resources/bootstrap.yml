@@ -8,8 +8,9 @@ spring:
     nacos:
       config:
         server-addr: 192.168.95.132:8848
+#        namespace: 命名空间ID
         # 这里猜测这个配置是ignore掉nacos上的配置文件
-#        import-check:
+#              import-check:
 #          enabled: false
       discovery:
         server-addr: 192.168.95.132:8848

@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.95.132:8848
+      discovery:
+        server-addr: 192.168.95.132:8848
+    gateway:
+      routes:
+        - id: test_route
+          uri: https://www.baidu.com
+          # 这里需要注意的是，对于路径localhost:88/hello?route_para=baidu这种url会路由到www.baidu.com/hello
+          predicates:
+            - Query=route_para, baidu
+  application:
+    name: gulimall-gateway
+
+server:
+  port: 88

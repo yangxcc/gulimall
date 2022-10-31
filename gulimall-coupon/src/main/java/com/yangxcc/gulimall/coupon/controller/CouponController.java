@@ -7,6 +7,7 @@ import com.yangxcc.gulimall.coupon.feign.ProductFeignService;
 import com.yangxcc.gulimall.coupon.service.CouponService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import java.util.Objects;
  * @email yangx@gmail.com
  * @date 2022-10-26 21:25:40
  */
+@RefreshScope  // 动态刷新配置，但是现在默认就是动态刷新的
 @RestController
 @RequestMapping("coupon/coupon")
 public class CouponController {
