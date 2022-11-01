@@ -1,19 +1,16 @@
 package com.yangxcc.gulimall.product.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import com.yangxcc.common.utils.R;
+import com.yangxcc.gulimall.product.entity.CategoryEntity;
+import com.yangxcc.gulimall.product.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.yangxcc.gulimall.product.entity.CategoryEntity;
-import com.yangxcc.gulimall.product.service.CategoryService;
-import com.yangxcc.common.utils.PageUtils;
-import com.yangxcc.common.utils.R;
+import java.util.Arrays;
+import java.util.List;
 
 
 
@@ -33,11 +30,11 @@ public class CategoryController {
     /**
      * 列表
      */
-    @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = categoryService.queryPage(params);
+    @RequestMapping("/list/tree")
+    public R list(){
+        List<CategoryEntity> categoryEntities = categoryService.listTree();
 
-        return R.ok().put("page", page);
+        return R.ok().put("category_entities", categoryEntities);
     }
 
 

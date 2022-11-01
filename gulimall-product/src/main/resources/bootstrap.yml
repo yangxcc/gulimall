@@ -8,8 +8,6 @@ spring:
     nacos:
       config:
         server-addr: 192.168.95.132:8848
-        import-check:
-          enabled: false
       discovery:
         server-addr: 192.168.95.132:8848
   application:
@@ -22,5 +20,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+
 server:
   port: 8080 # 默认即为8080
