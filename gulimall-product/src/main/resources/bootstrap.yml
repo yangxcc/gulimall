@@ -10,6 +10,7 @@ spring:
         server-addr: 192.168.95.132:8848
       discovery:
         server-addr: 192.168.95.132:8848
+
   application:
     # 这里name不能是_的下划线
     name: gulimall-product
