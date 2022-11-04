@@ -2,14 +2,13 @@ package com.yangxcc.gulimall.product.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yangxcc.common.validgroup.addGroup;
+import com.yangxcc.common.validgroup.updateGroup;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 
 /**
@@ -28,6 +27,11 @@ public class BrandEntity implements Serializable {
 	 * 品牌id
 	 */
 	@TableId
+	// 只有注册了@Validated(value = addGroup.class)，下面的Null注解才会生效，
+	// 而NotNull只有在注册了@Validated(value = updateGroup.class)的时候才会生效
+	// 对于没有指定分组的注解，只有在@Validated/无@Validated的情况下才会生效
+	@Null(groups = addGroup.class)
+	@NotNull(groups = updateGroup.class)
 	private Long brandId;
 	/**
 	 * 品牌名
@@ -36,7 +40,7 @@ public class BrandEntity implements Serializable {
 	 * - @NotEmpty不能为null，且长度必须大于0，一般用在集合类或者数组类上
 	 * - @NotBlank 只能用在string类型的字段上，且调用 trim() 后，长度必须大于0，即不能只有空格，必须有实际字符
 	 * */
-	@NotBlank(message = "名字不能为空")
+	@NotBlank(message = "名字不能为空", groups = {addGroup.class, updateGroup.class})
 	private String name;
 	/**
 	 * 品牌logo地址

@@ -2,13 +2,15 @@ package com.yangxcc.gulimall.product.controller;
 
 import com.yangxcc.common.utils.PageUtils;
 import com.yangxcc.common.utils.R;
+import com.yangxcc.common.validgroup.addGroup;
+import com.yangxcc.common.validgroup.updateGroup;
 import com.yangxcc.gulimall.product.entity.BrandEntity;
 import com.yangxcc.gulimall.product.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +55,7 @@ public class BrandController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@Valid @RequestBody BrandEntity brand, BindingResult result){
+    public R save(@Validated(value = addGroup.class) @RequestBody BrandEntity brand, BindingResult result){
         if (result.hasErrors()) {
             HashMap<String, String> errorMsg = new HashMap<>();
             result.getFieldErrors().forEach((item) -> {
@@ -73,7 +75,7 @@ public class BrandController {
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody BrandEntity brand){
+    public R update(@Validated(value = updateGroup.class) @RequestBody BrandEntity brand){
 		brandService.updateById(brand);
 
         return R.ok();
