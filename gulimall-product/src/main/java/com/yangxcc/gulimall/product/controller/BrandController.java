@@ -1,19 +1,17 @@
 package com.yangxcc.gulimall.product.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.yangxcc.gulimall.product.entity.BrandEntity;
-import com.yangxcc.gulimall.product.service.BrandService;
 import com.yangxcc.common.utils.PageUtils;
 import com.yangxcc.common.utils.R;
+import com.yangxcc.gulimall.product.entity.BrandEntity;
+import com.yangxcc.gulimall.product.service.BrandService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 
 
@@ -55,10 +53,20 @@ public class BrandController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody BrandEntity brand){
-		brandService.save(brand);
+    public R save(@Valid @RequestBody BrandEntity brand, BindingResult result){
+        if (result.hasErrors()) {
+            HashMap<String, String> errorMsg = new HashMap<>();
+            result.getFieldErrors().forEach((item) -> {
+                String field = item.getField();
+                String message = item.getDefaultMessage();
+                errorMsg.put(field, message);
+            });
+            return R.error().put("data", errorMsg);
 
-        return R.ok();
+        } else {
+            brandService.save(brand);
+            return R.ok();
+        }
     }
 
     /**
