@@ -2,10 +2,10 @@ package com.yangxcc.gulimall.product.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yangxcc.common.valid.ListValue;
 import com.yangxcc.common.validgroup.addGroup;
 import com.yangxcc.common.validgroup.updateGroup;
 import lombok.Data;
-import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.*;
@@ -54,8 +54,12 @@ public class BrandEntity implements Serializable {
 	private String descript;
 	/**
 	 * 显示状态[0-不显示；1-显示]
+	 * 自定义注解的编写流程：
+	 * 1. 编写注解名字
+	 * 2. 编写注解类
+	 * 3. 关联注解和注解类
 	 */
-	@Range(min = 0, max = 1)
+	@ListValue(value={0, 1})
 	private Integer showStatus;
 	/**
 	 * 检索首字母
