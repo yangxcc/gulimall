@@ -6,6 +6,7 @@ import com.yangxcc.common.validgroup.addGroup;
 import com.yangxcc.common.validgroup.updateGroup;
 import com.yangxcc.gulimall.product.entity.BrandEntity;
 import com.yangxcc.gulimall.product.service.BrandService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("product/brand")
+@Api(value = "品牌接口")
 public class BrandController {
     @Autowired
     private BrandService brandService;
