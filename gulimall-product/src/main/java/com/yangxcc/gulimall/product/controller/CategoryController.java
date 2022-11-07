@@ -3,11 +3,9 @@ package com.yangxcc.gulimall.product.controller;
 import com.yangxcc.common.utils.R;
 import com.yangxcc.gulimall.product.entity.CategoryEntity;
 import com.yangxcc.gulimall.product.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.List;
  * @email yangx@gmail.com
  * @date 2022-10-28 10:27:54
  */
+@Slf4j
 @RestController
 @RequestMapping("product/category")
 public class CategoryController {
@@ -41,9 +40,10 @@ public class CategoryController {
     /**
      * 信息
      */
-    @RequestMapping("/info/{catId}")
+    @RequestMapping(value = "/info/{catId}", method = RequestMethod.GET)
     public R info(@PathVariable("catId") Long catId){
-		CategoryEntity category = categoryService.getById(catId);
+//		CategoryEntity category = categoryService.getById(catId);
+        CategoryEntity category = categoryService.getCategoryPathById(catId);
 
         return R.ok().put("category", category);
     }

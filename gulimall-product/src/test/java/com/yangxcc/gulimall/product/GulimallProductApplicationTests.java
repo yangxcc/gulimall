@@ -1,6 +1,8 @@
 package com.yangxcc.gulimall.product;
 
+import com.yangxcc.gulimall.product.entity.CategoryEntity;
 import com.yangxcc.gulimall.product.entity.SkuInfoEntity;
+import com.yangxcc.gulimall.product.service.CategoryService;
 import com.yangxcc.gulimall.product.service.SkuInfoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,15 @@ class GulimallProductApplicationTests {
 
     @Autowired
     SkuInfoService skuInfoService;
+
+    @Autowired
+    CategoryService categoryService;
+
+    @Test
+    public void testCategory() {
+        CategoryEntity categoryPathById = categoryService.getCategoryPathById((long) 996);
+        System.out.println(categoryPathById);
+    }
 
     @Test
     void contextLoads() {
