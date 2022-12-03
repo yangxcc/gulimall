@@ -15,10 +15,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -38,6 +36,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return new PageUtils(page);
     }
 
+    public List<CategoryEntity> listTreeWithLocalLock() {
+        String categoryTreeForCache = stringRedisTemplate.opsForValue().get("category_tree");
+        if (!StringUtils.hasLength(categoryTreeForCache)) {
+            List<CategoryEntity> data = listTreeFromDBWithLocalLock();
+            return data;
+        }
+
+        // 将categoryTree中的数据反序列化成string
+        return JSON.parseObject(categoryTreeForCache, new TypeReference<List<CategoryEntity>>() {
+        });
+    }
+
+
     @Override
     public List<CategoryEntity> listTree() {
         String categoryTree = stringRedisTemplate.opsForValue().get("category_tree");
@@ -50,7 +61,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }
 
         // 将categoryTree中的数据反序列化成string
-        return JSON.parseObject(categoryTree, new TypeReference<List<CategoryEntity>>(){});
+        return JSON.parseObject(categoryTree, new TypeReference<List<CategoryEntity>>() {
+        });
     }
 
     public List<CategoryEntity> listTreeFromDB() {
@@ -67,6 +79,41 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         }).collect(Collectors.toList());
 
         return entities;
+    }
+
+    public List<CategoryEntity> listTreeFromDBWithLocalLock() {
+        // 因为springboot中的所有组件在容器中都是单例的，所以可以这么写，因为即使有100个请求，他们使用的都是这一个实例对象
+        synchronized (this) {
+            // 1. 得到锁之后，我们需要判断一下缓存中是否存在
+            String dataFromCache = stringRedisTemplate.opsForValue().get("category_tree");
+            if (StringUtils.hasLength(dataFromCache)) {
+                return JSON.parseObject(dataFromCache, new TypeReference<List<CategoryEntity>>() {
+                });
+            }
+            // 业务逻辑：查出全部category记录
+            List<CategoryEntity> categoryEntities = baseMapper.selectList(null);
+            // 获得一级目录
+            List<CategoryEntity> entities = categoryEntities.stream().filter(
+                    categoryEntity -> categoryEntity.getParentCid() == 0
+            ).map((menu -> {
+                menu.setChildren(getChildren(menu, categoryEntities));
+                return menu;
+            })).sorted((menu1, menu2) -> {
+                return (menu1.getSort() == null ? 0 : menu1.getSort()) - (menu2.getSort() == null ? 0 : menu2.getSort());
+            }).collect(Collectors.toList());
+
+            // 2. 必须要将写入缓存也放入到同步块中
+            if (entities.isEmpty()) {
+                // 将空值也加入缓存解决缓存穿透，并设置随机过期时间解决缓存雪崩
+                stringRedisTemplate.opsForValue().set("category_tree", "", new Random().nextInt(100), TimeUnit.SECONDS);
+            } else {
+                // 将数据转成json格式的字符串
+                String str = JSON.toJSONString(entities);
+                stringRedisTemplate.opsForValue().set("category_tree", str);
+            }
+
+            return entities;
+        }
     }
 
     @Override
