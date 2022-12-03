@@ -12,6 +12,7 @@ import com.yangxcc.gulimall.product.entity.CategoryEntity;
 import com.yangxcc.gulimall.product.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -39,7 +40,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public List<CategoryEntity> listTreeWithLocalLock() {
         String categoryTreeForCache = stringRedisTemplate.opsForValue().get("category_tree");
         if (!StringUtils.hasLength(categoryTreeForCache)) {
-            List<CategoryEntity> data = listTreeFromDBWithLocalLock();
+            List<CategoryEntity> data = listTreeCategoryWithLocalLock();
             return data;
         }
 
@@ -81,7 +82,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return entities;
     }
 
-    public List<CategoryEntity> listTreeFromDBWithLocalLock() {
+    public List<CategoryEntity> listTreeCategoryWithLocalLock() {
         // 因为springboot中的所有组件在容器中都是单例的，所以可以这么写，因为即使有100个请求，他们使用的都是这一个实例对象
         synchronized (this) {
             // 1. 得到锁之后，我们需要判断一下缓存中是否存在
@@ -113,6 +114,37 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             }
 
             return entities;
+        }
+    }
+
+    public List<CategoryEntity> listTreeCategoryWithDistributedLock() {
+        while (true) {
+            // 1. 抢占分布式锁，加上过期时间，避免由于程序崩溃等原因导致没有将锁删除掉造成的死锁问题
+            // 而且这里需要注意抢占锁和设置过期时间要使用原子操作，而不能分开，分开就有可能出于外部原因导致锁抢占到了，但是没有设置过期时间
+            String token = UUID.randomUUID().toString();  // 为了避免由于业务代码超市，导致请求误删锁
+            Boolean lock = stringRedisTemplate.opsForValue().setIfAbsent("LOCK", token, 30, TimeUnit.SECONDS);
+            if (lock) {
+                // 加锁成功
+                List<CategoryEntity> result;
+                try {
+                    result = listTree();
+                } finally {
+                    // 解锁
+//                if (Objects.equals(stringRedisTemplate.opsForValue().get("LOCK"), token)) {
+//                    stringRedisTemplate.delete("LOCK");
+//                }
+                    String scripts = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
+                    stringRedisTemplate.execute(new DefaultRedisScript<Long>(scripts, Long.class), Collections.singletonList("LOCK"), token);
+                }
+                return result;
+            } else {
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                // return listTreeCategoryWithDistributedLock();  // 加锁失败，自旋，使用循环实现，递归实现消耗的内存比较多
+            }
         }
     }
 
